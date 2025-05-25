@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+
 class RoleController extends Controller
 {
     public function index()
@@ -18,10 +19,18 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|unique:roles']);
+        $request->validate([
+            'name' => 'required|unique:roles,name',
+            'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,id',
+        ]);
+
         $role = Role::create(['name' => $request->name]);
-        $role->syncPermissions($request->permissions ?? []);
-        return redirect()->back();
+        if ($request->has('permissions')) {
+            $role->syncPermissions($request->permissions);
+        }
+
+        return back();
     }
 
     public function destroy(Role $role)
