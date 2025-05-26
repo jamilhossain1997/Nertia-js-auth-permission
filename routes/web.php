@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Middleware\HandleInertiaRequests;
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -20,10 +21,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified' ,HandleInertiaRequests::class])->group(function () {
     Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
-    Route::post('/users/{user}/assign-role', [UserController::class, 'assignRole'])->name('users.assignRole')->middleware(['auth', 'can:assign roles']);;
-    Route::resource('roles', RoleController::class)->only(['index', 'store', 'destroy','edit']);
+    Route::post('/users/{user}/assign-role', [UserController::class, 'assignRole'])->name('users.assignRole')->middleware(['auth', 'can:assign roles']);
+    Route::resource('roles', RoleController::class)->only(['index', 'store','update', 'destroy','edit']);
 });
 
 Route::get('/', function () {

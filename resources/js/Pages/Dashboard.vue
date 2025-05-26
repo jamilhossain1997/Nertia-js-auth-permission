@@ -6,13 +6,11 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     users: Array,
     roles: Array,
-    canViewUsers: Boolean,
-    canAssignRoles: Boolean,
-    canPermission:Boolean
 });
 
 const selectedRoles = ref({});
@@ -21,6 +19,9 @@ const showingNavigationDropdown = ref(false);
 props.users.forEach(user => {
     selectedRoles.value[user.id] = user.roles.length > 0 ? user.roles[0].name : '';
 });
+
+const page = usePage();
+const permissionNames = page.props.auth.user.can;
 
 const assignRole = (userId) => {
     if (!selectedRoles.value[userId]) {
@@ -42,9 +43,12 @@ const assignRole = (userId) => {
         }
     });
 };
+
+
 </script>
 
 <template>
+
     <Head title="Dashboard" />
 
     <div>
@@ -54,11 +58,15 @@ const assignRole = (userId) => {
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex h-16 justify-between">
                         <div class="flex">
+
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</NavLink>
-                                <NavLink v-if="canPermission" :href="route('permissions.index')" :active="route().current('permissions.index')">Permissions</NavLink>
-                                <NavLink v-if="canAssignRoles" :href="route('roles.index')" :active="route().current('roles.index')">Roles</NavLink>
+                                <NavLink  :href="route('dashboard')" :active="route().current('dashboard')">Dashboard
+                                </NavLink>
+                                <NavLink  v-if="permissionNames.includes('permission')" :href="route('permissions.index')"
+                                    :active="route().current('permissions.index')">Permissions</NavLink>
+                                <NavLink v-if="permissionNames.includes('assign roles')" :href="route('roles.index')"
+                                    :active="route().current('roles.index')">Roles</NavLink>
                             </div>
                         </div>
 
@@ -83,7 +91,8 @@ const assignRole = (userId) => {
 
                                     <template #content>
                                         <DropdownLink :href="route('profile.edit')">Profile</DropdownLink>
-                                        <DropdownLink :href="route('logout')" method="post" as="button">Log Out</DropdownLink>
+                                        <DropdownLink :href="route('logout')" method="post" as="button">Log Out
+                                        </DropdownLink>
                                     </template>
                                 </Dropdown>
                             </div>
@@ -94,10 +103,12 @@ const assignRole = (userId) => {
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"
                                 class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none">
                                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                    <path :class="{ hidden: showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }"
+                                    <path
+                                        :class="{ hidden: showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }"
                                         stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4 6h16M4 12h16M4 18h16" />
-                                    <path :class="{ hidden: !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }"
+                                    <path
+                                        :class="{ hidden: !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }"
                                         stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -107,9 +118,11 @@ const assignRole = (userId) => {
                 </div>
 
                 <!-- Responsive Navigation -->
-                <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }" class="sm:hidden">
+                <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
+                    class="sm:hidden">
                     <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard
+                        </ResponsiveNavLink>
                     </div>
                     <div class="border-t border-gray-200 pb-1 pt-4">
                         <div class="px-4">
@@ -118,7 +131,8 @@ const assignRole = (userId) => {
                         </div>
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">Profile</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('logout')" method="post" as="button">Log Out</ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('logout')" method="post" as="button">Log Out
+                            </ResponsiveNavLink>
                         </div>
                     </div>
                 </div>
@@ -139,28 +153,33 @@ const assignRole = (userId) => {
                     <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                         <table class="table-auto w-full border-collapse border border-gray-300">
                             <thead>
-                                <tr v-if="canViewUsers" class="bg-gray-100">
+                                <tr v-if="permissionNames.includes('view users')" class="bg-gray-100">
                                     <th class="border px-4 py-2">Name</th>
                                     <th class="border px-4 py-2">Email</th>
                                     <th class="border px-4 py-2">Roles</th>
-                                    <th v-if="canAssignRoles" class="border px-4 py-2">Assign Role</th>
+                                    <th v-if="permissionNames.includes('assign roles')" class="border px-4 py-2">Assign
+                                        Role</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-if="canViewUsers" v-for="user in users" :key="user.id" class="hover:bg-gray-50">
+                                <tr v-if="permissionNames.includes('view users')" v-for="user in users"
+                                    :key="user.id" class="hover:bg-gray-50">
                                     <td class="border px-4 py-2">{{ user.name }}</td>
                                     <td class="border px-4 py-2">{{ user.email }}</td>
                                     <td class="border px-4 py-2">
                                         <span v-if="user.roles.length > 0">
-                                            {{ user.roles.map(r => r.name).join(', ') }}
+                                            {{user.roles.map(r => r.name).join(', ')}}
                                         </span>
                                         <span v-else class="italic text-gray-500">No roles assigned</span>
                                     </td>
-                                    <td v-if="canAssignRoles" class="border px-4 py-2">
+                                    <td v-if="permissionNames.includes('assign roles')" class="border px-4 py-2">
                                         <form @submit.prevent="assignRole(user.id)">
-                                            <select v-model="selectedRoles[user.id]" class="border rounded px-2 py-1">
+                                            <select v-model="selectedRoles[user.id]" class="border rounded px-2 py-1"
+                                                multiple>
                                                 <option value="" disabled>Select role</option>
-                                                <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
+                                                <option v-for="role in roles" :key="role.id" :value="role.name">{{
+                                                    role.name }}
+                                                </option>
                                             </select>
                                             <button type="submit"
                                                 class="ml-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -183,6 +202,7 @@ const assignRole = (userId) => {
 table {
     border-collapse: collapse;
 }
+
 th,
 td {
     border: 1px solid #ddd;

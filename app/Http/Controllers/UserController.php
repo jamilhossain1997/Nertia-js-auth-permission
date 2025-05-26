@@ -12,16 +12,10 @@ class UserController extends Controller
 {
     public function index()
     {
-
-       $user = Auth::user();
-
-    return Inertia::render('Dashboard', [
-        'users' => User::with('roles')->get(),
-        'roles' => Role::all(),
-        'canViewUsers' => $user->can('view users'),
-        'canAssignRoles' => $user->can('assign roles'),
-        'canPermission' =>$user->can('permission')
-    ]);
+        return Inertia::render('Dashboard', [
+            'users' => User::with('roles')->get(),
+            'roles' => Role::all(),
+        ]);
     }
 
     public function assignRole(Request $request, User $user)

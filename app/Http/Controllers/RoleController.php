@@ -6,14 +6,19 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Auth;
 
 class RoleController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+
         return Inertia::render('Roles/Index', [
             'roles' => Role::with('permissions')->get(),
             'permissions' => Permission::all(),
+            'userPermissions' => $user->getAllPermissions()->pluck('name'),
+
         ]);
     }
 
