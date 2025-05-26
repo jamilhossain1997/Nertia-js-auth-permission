@@ -20,6 +20,7 @@ class UserController extends Controller
         'roles' => Role::all(),
         'canViewUsers' => $user->can('view users'),
         'canAssignRoles' => $user->can('assign roles'),
+        'canPermission' =>$user->can('permission')
     ]);
     }
 

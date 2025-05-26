@@ -33,6 +33,28 @@ class RoleController extends Controller
         return back();
     }
 
+    public function edit(Role $role)
+    {
+        return Inertia::render('Roles/Edit', [
+            'role' => $role->load('permissions'),
+            'permissions' => Permission::all(),
+        ]);
+    }
+
+    public function update(Request $request, Role $role)
+    {
+        $request->validate([
+            'name' => 'required|unique:roles,name,' . $role->id,
+            'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,id',
+        ]);
+
+        $role->update(['name' => $request->name]);
+        $role->syncPermissions($request->permissions ?? []);
+
+        return redirect()->route('roles.index')->with('success', 'Role updated successfully.');
+    }
+
     public function destroy(Role $role)
     {
         $role->delete();

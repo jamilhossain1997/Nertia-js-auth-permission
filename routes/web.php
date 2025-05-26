@@ -23,7 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
     Route::post('/users/{user}/assign-role', [UserController::class, 'assignRole'])->name('users.assignRole')->middleware(['auth', 'can:assign roles']);;
-    Route::resource('roles', RoleController::class)->only(['index', 'store', 'destroy']);
+    Route::resource('roles', RoleController::class)->only(['index', 'store', 'destroy','edit']);
 });
 
 Route::get('/', function () {
