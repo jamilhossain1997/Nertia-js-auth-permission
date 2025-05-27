@@ -1,11 +1,9 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-
 const props = defineProps({
     role: Object,
     permissions: Array,
 });
-
 const form = useForm({
     name: props.role.name,
     permissions: props.role.permissions.map(p => p.id),
@@ -15,13 +13,10 @@ function updateRole() {
     form.put(`/roles/${props.role.id}`);
 }
 </script>
-
 <template>
     <Head title="Edit Role" />
-
     <div>
         <h1 class="text-xl font-bold mb-4">Edit Role</h1>
-
         <form @submit.prevent="updateRole" class="space-y-4">
             <input v-model="form.name" class="border p-2 w-full" placeholder="Role name" />
 

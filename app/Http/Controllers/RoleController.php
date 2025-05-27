@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -17,8 +16,6 @@ class RoleController extends Controller
         return Inertia::render('Roles/Index', [
             'roles' => Role::with('permissions')->get(),
             'permissions' => Permission::all(),
-            'userPermissions' => $user->getAllPermissions()->pluck('name'),
-
         ]);
     }
 
