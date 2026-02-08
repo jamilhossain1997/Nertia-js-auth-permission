@@ -32,6 +32,21 @@ function destroyRole(id) {
         form.delete(`/roles/${id}`);
     }
 }
+
+function toggleAllPermissions(module, checked) {
+    const modulePermIds = props.permissions[module].map(p => p.id);
+
+    if (checked) {
+        form.permissions = [...new Set([...form.permissions, ...modulePermIds])];
+    } else {
+        form.permissions = form.permissions.filter(id => !modulePermIds.includes(id));
+    }
+}
+
+function isAllModuleSelected(module) {
+    const modulePermIds = props.permissions[module].map(p => p.id);
+    return modulePermIds.every(id => form.permissions.includes(id));
+}
 </script>
 
 <template>
@@ -131,17 +146,24 @@ function destroyRole(id) {
                 <!-- Add Role Form -->
                 <form @submit.prevent="submit" class="mb-6 space-y-4">
                     <input v-model="form.name" class="border p-2 w-full" placeholder="Role name" />
-                    <div>
-                        <label class="font-semibold mb-2 block">Assign Permissions:</label>
+                    <div v-for="(group, module) in permissions" :key="module" class="mb-4">
+                        <h3 class="font-semibold mb-2 capitalize">
+                            <input 
+                                type="checkbox" 
+                                :checked="isAllModuleSelected(module)"
+                                @change="toggleAllPermissions(module, $event.target.checked)" 
+                                class="form-checkbox" 
+                            />
+                            {{ module }}
+                        </h3>
                         <div class="flex flex-wrap gap-2">
-                            <label v-for="permission in permissions" :key="permission.id"
-                                class="inline-flex items-center space-x-2">
-                                <input type="checkbox" :value="permission.id" v-model="form.permissions"
-                                    class="form-checkbox" />
-                                <span>{{ permission.name }}</span>
+                            <label v-for="perm in group" :key="perm.id" class="inline-flex items-center space-x-2">
+                                <input type="checkbox" :value="perm.id" v-model="form.permissions" class="form-checkbox" />
+                                <span>{{ perm.name.replace(`${module}.`, '') }}</span>
                             </label>
                         </div>
                     </div>
+
 
                     <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded" :disabled="form.processing">
                         Add Role

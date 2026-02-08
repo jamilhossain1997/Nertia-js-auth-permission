@@ -23,11 +23,11 @@ function updateUserRole(userId, role) {
 </script>
 
 <template>
-
+    
     <Head title="User Management" />
     <h1 class="text-xl font-bold mb-4">User Management</h1>
 
-    <form @submit.prevent="createUser" class="space-y-4 mb-6">
+   <!--  <form @submit.prevent="createUser" class="space-y-4 mb-6">
         <input v-model="form.name" placeholder="Name" class="border p-2" />
         <input v-model="form.email" placeholder="Email" class="border p-2" />
         <select v-model="form.role" class="border p-2">
@@ -35,7 +35,7 @@ function updateUserRole(userId, role) {
             <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
         </select>
         <button type="submit" class="bg-blue-500 text-white px-4 py-2">Create User</button>
-    </form>
+    </form> -->
 
     <table class="w-full table-auto border">
         <thead>

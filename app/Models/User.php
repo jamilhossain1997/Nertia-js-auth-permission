@@ -12,7 +12,14 @@ use Spatie\Permission\Traits\HasPermissions;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasPermissions,HasRoles, HasFactory, Notifiable;
+    use HasRoles, HasFactory, Notifiable;
+
+    protected static function booted()
+    {
+        static::created(function($user){
+            $user->assignRole('user');
+        });
+    }
 
     /**
      * The attributes that are mass assignable.

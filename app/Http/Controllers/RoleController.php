@@ -12,10 +12,12 @@ class RoleController extends Controller
     public function index()
     {
         $user = Auth::user();
-
+        $permission = Permission::all()->groupBy(function ($prem){
+            return explode('.',$prem->name)[0];
+        });
         return Inertia::render('Roles/Index', [
             'roles' => Role::with('permissions')->get(),
-            'permissions' => Permission::all(),
+            'permissions' => $permission,
         ]);
     }
 
@@ -37,9 +39,13 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
+
+       $permission = Permission::all()->groupBy(function ($prem){
+            return explode('.',$prem->name)[0];
+        });
         return Inertia::render('Roles/Edit', [
             'role' => $role->load('permissions'),
-            'permissions' => Permission::all(),
+            'permissions' => $permission,
         ]);
     }
 
@@ -63,3 +69,6 @@ class RoleController extends Controller
         return redirect()->back();
     }
 }
+
+
+

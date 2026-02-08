@@ -15,6 +15,10 @@ class UserController extends Controller
         return Inertia::render('Dashboard', [
             'users' => User::with('roles')->get(),
             'roles' => Role::all(),
+            'auth' =>[
+                'user' => Auth::user(),
+                'permissions' => Auth::user()->getAllPermissions()->pluck('name'),
+            ],
         ]);
     }
 

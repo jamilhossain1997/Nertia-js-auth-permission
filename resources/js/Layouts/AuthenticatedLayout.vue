@@ -5,9 +5,11 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link,usePage, } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+const page = usePage();
+const permissionNames = page.props.auth.permissions || [];
 </script>
 
 <template>
@@ -44,6 +46,14 @@ const showingNavigationDropdown = ref(false);
                                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink :href="route('roles.index')" :active="route().current('roles.index')">
                                         Roles
+                                    </NavLink>
+                                </div>
+                            </div>
+
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                    <NavLink :href="route('users.index')" :active="route().current('users.index')">
+                                        Users
                                     </NavLink>
                                 </div>
                             </div>
