@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Exceptions\UnauthorizedException;
+use Illuminate\Http\Response;
+
 
 class CustomPermissionMiddleware
 {
@@ -19,20 +21,21 @@ class CustomPermissionMiddleware
 
         $routeName = $request->route()->getName();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Your custom "__" logic
-        |--------------------------------------------------------------------------
-        | example:
-        | roles.index__update
-        | -> roles.index
-        */
-        $permission = explode('__', $routeName)[0];
+        try {
+            $permission = explode('__', $routeName)[0];
 
-        if (! $user->can($permission)) {
+            if ($user->can($permission)) {
+                return $next($request);
+            }
+        } catch (\Exception $e) {
             throw UnauthorizedException::forPermissions([$permission]);
         }
 
-        return $next($request);
+        response()->json([
+            'message' => trans('auth.unauthorized'),
+            'errors' => [
+                'permission' => ['There is no permission to access this url by given user.'],
+            ],
+        ], Response::HTTP_UNAUTHORIZED)->throwResponse();
     }
 }
