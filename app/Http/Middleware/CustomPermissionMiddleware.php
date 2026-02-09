@@ -3,31 +3,36 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Exceptions\UnauthorizedException;
 
 class CustomPermissionMiddleware
 {
-    public function handle(Request $request, Closure $next, $permissionsString)
+    public function handle($request, Closure $next)
     {
-        $user = $request->user();
-        if (!$user) {
-            return response()->json(['message'=>'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+
+        $user = Auth::user();
+
+        if (! $user) {
+            throw UnauthorizedException::notLoggedIn();
         }
 
-        $permissions = explode('__', $permissionsString);
+        $routeName = $request->route()->getName();
 
-        foreach ($permissions as $permission) {
-            if ($user->hasPermissionTo($permission)) {
-                return $next($request);
-            }
+        /*
+        |--------------------------------------------------------------------------
+        | Your custom "__" logic
+        |--------------------------------------------------------------------------
+        | example:
+        | roles.index__update
+        | -> roles.index
+        */
+        $permission = explode('__', $routeName)[0];
+
+        if (! $user->can($permission)) {
+            throw UnauthorizedException::forPermissions([$permission]);
         }
 
-        return response()->json([
-            'message' => 'auth.unauthorized',
-            'errors' => [
-                'permission' => ['There is no permission to access this URL by given user.'],
-            ],
-        ], Response::HTTP_UNAUTHORIZED);
+        return $next($request);
     }
 }

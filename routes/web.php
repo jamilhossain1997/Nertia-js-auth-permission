@@ -39,57 +39,48 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/role-permissions', [UserController::class, 'showRolePermissions'])
         ->name('role.permissions');
 
-    Route::get('/permissions', [PermissionController::class, 'index'])
-        ->name('permissions.index')
-        ->middleware('permission:permissions.index');
+    Route::middleware('custom_permission')->group(function () {
+        Route::get('/permissions', [PermissionController::class, 'index'])
+            ->name('permissions.index');
+        Route::post('/permissions', [PermissionController::class, 'store'])
+            ->name('permissions.store');
 
-    Route::post('/permissions', [PermissionController::class, 'store'])
-        ->name('permissions.store')
-        ->middleware('permission:permissions.store');
+        Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy'])
+            ->name('permissions.destroy');
 
-    Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy'])
-        ->name('permissions.destroy')
-        ->middleware('permission:permissions.destroy');
+        Route::get('/users', [UserController::class, 'index1'])
+            ->name('users.index');
 
-    Route::get('/users', [UserController::class, 'index1'])
-        ->name('users.index')
-        ->middleware('permission:users.index');
+        Route::get('/users/{user}', [UserController::class, 'index1'])
+            ->name('users.index__view');
 
-    Route::post('/users', [UserController::class, 'store'])
-        ->name('users.store')
-        ->middleware('permission:users.store');
+        Route::post('/users', [UserController::class, 'store'])
+            ->name('users.store');
 
-    Route::put('/users/{user}/role', [UserController::class, 'updateRole'])
-        ->name('users.updateRole')
-        ->middleware('permission:users.updateRole');
+        Route::put('/users/{user}/role', [UserController::class, 'updateRole'])
+            ->name('users.updateRole');
 
-    Route::post('/users/{user}/assign-role', [UserController::class, 'assignRole'])
-        ->name('users.assignRole')
-        ->middleware('permission:users.assignRole');
+        Route::post('/users/{user}/assign-role', [UserController::class, 'assignRole'])
+            ->name('users.assignRole');
 
-    Route::get('/user/create', [UserController::class, 'index'])
-        ->name('users.create')
-        ->middleware('permission:users.create');
+        Route::get('/user/create', [UserController::class, 'index'])
+            ->name('users.create');
 
-    Route::get('/roles', [RoleController::class, 'index'])
-        ->name('roles.index')
-        ->middleware('permission:roles.index');
+        Route::get('/roles', [RoleController::class, 'index'])
+            ->name('roles.index');
 
-    Route::post('/roles', [RoleController::class, 'store'])
-        ->name('roles.store')
-        ->middleware('permission:roles.store');
+        Route::post('/roles', [RoleController::class, 'store'])
+            ->name('roles.store');
 
-    Route::put('/roles/{role}', [RoleController::class, 'update'])
-        ->name('roles.update')
-        ->middleware('permission:roles.update');
+        Route::put('/roles/{role}', [RoleController::class, 'update'])
+            ->name('roles.update');
 
-    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])
-        ->name('roles.destroy')
-        ->middleware('permission:roles.destroy');
+        Route::delete('/roles/{role}', [RoleController::class, 'destroy'])
+            ->name('roles.destroy');
 
-    Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])
-        ->name('roles.edit')
-        ->middleware('permission:roles.edit');
+        Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])
+            ->name('roles.edit');
+    });
 });
 
 
